@@ -1,5 +1,6 @@
 # Versión web pública de FullStock en Render (plan gratuito).
 # La base de datos gratuita de Render vence 30 días después de creada.
+# (La base conserva su nombre original: renombrarla implicaría migrar los datos.)
 databases:
   - name: elpapayal-db
     plan: free
@@ -10,7 +11,7 @@ databases:
 
 services:
   - type: web
-    name: elpapayal
+    name: fullstock
     runtime: python
     plan: free
     region: virginia
