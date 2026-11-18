@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+  <h1>{{ titulo }}</h1>
+  <a class="boton secundario" href="{% url 'usuarios:lista' %}">← Volver a usuarios</a>
+</div>
+<form method="post" novalidate>
+  {% csrf_token %}
+  <div class="rejilla-2" style="grid-template-columns: minmax(0, 1fr) 400px">
+    <section class="tarjeta">
+      <h2>Datos del colaborador</h2>
+      {% include "_errores_form.html" %}
+      <div class="fila-campos">
+        {% include "_campo.html" with campo=form.nombre %}
+        {% if form.usuario %}{% include "_campo.html" with campo=form.usuario %}{% endif %}
+      </div>
+      <div class="fila-campos">
+        {% include "_campo.html" with campo=form.pin %}
+        {% include "_campo.html" with campo=form.pin_repetido %}
+      </div>
+      {% if form.activo %}
+        <label class="casilla">{{ form.activo }} {{ form.activo.label }}</label>
+      {% else %}
+        <p class="ayuda">Dile el PIN a la persona. Podrás cambiarlo después desde Usuarios.</p>
+      {% endif %}
+      <div style="display: flex; gap: 12px; margin-top: 22px">
+        <button type="submit" class="boton">{{ boton }}</button>
+        <a class="boton secundario" href="{% url 'usuarios:lista' %}">Cancelar</a>
+      </div>
+    </section>
+
+    <section class="tarjeta">
+      <h2>{{ form.permisos.label }}</h2>
+      <ul class="permisos">
+        {% for opcion in form.permisos %}
+          <li><label for="{{ opcion.id_for_label }}">{{ opcion.choice_label }} {{ opcion.tag }}</label></li>
+        {% endfor %}
+      </ul>
+      <p class="ayuda">Usuarios, permisos y configuración son solo del dueño.</p>
+    </section>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% load formato %}
+<form hx-post="{% url 'ventas:anular' venta.pk %}" hx-target="#modal-contenido">
+  <h2 style="color: var(--peligro)">¿Anular esta venta?</h2>
+  <div class="cambio"><span>Venta de las {{ venta.fecha|hora }} · {{ venta.usuario.nombre }}</span><strong>{{ venta.total|pesos }}</strong></div>
+  <p>Los productos vuelven al inventario{% if venta.es_fiado %} y la deuda del cliente se descuenta{% endif %}. La venta no se borra: queda guardada como anulada.</p>
+  {% if error %}<div class="errores" role="alert">{{ error }}</div>{% endif %}
+  <div class="campo">
+    <label for="motivo">Motivo *</label>
+    <input id="motivo" type="text" name="motivo" maxlength="200" autofocus required placeholder="Por ejemplo: se registró dos veces">
+  </div>
+  <div class="acciones-modal">
+    <button type="button" class="boton secundario" data-cerrar-modal>Volver</button>
+    <button type="submit" class="boton peligro">Sí, anular venta</button>
+  </div>
+</form>

@@ -1,0 +1,9 @@
+{% if similares %}
+  <div class="aviso" role="status">
+    <div>
+      <strong>Se parece a un producto que ya existe</strong>
+      {% for p in similares %}«{{ p.nombre }}»{% if not forloop.last %}, {% endif %}{% endfor %}
+      {% if similares|length == 1 %}ya está{% else %}ya están{% endif %} en el inventario. Guarda solo si es otro producto.
+    </div>
+  </div>
+{% endif %}

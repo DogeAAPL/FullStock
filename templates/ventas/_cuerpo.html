@@ -1,0 +1,65 @@
+{% load formato %}
+{% if venta_corregida %}
+  <div class="banda-correccion">Estás corrigiendo la venta de las <strong>{{ venta_corregida.fecha|hora }}</strong> por {{ venta_corregida.total|pesos }}. Al guardar, la original queda anulada y se crea esta nueva.</div>
+{% endif %}
+<div class="rejilla-2">
+  <div class="columna">
+    <section class="tarjeta">
+      <h2>Agregar producto</h2>
+      {% if atajos %}
+        <div class="atajos">Atajos:
+          {% for p in atajos %}<button type="button" class="chip" hx-get="{% url 'ventas:seleccionar_producto' p.pk %}" hx-target="#agregar" hx-swap="outerHTML">{{ p.nombre }}</button>{% endfor %}
+        </div>
+      {% endif %}
+      {% include "ventas/_agregar.html" %}
+    </section>
+
+    <section class="tarjeta">
+      <h2>Líneas de esta venta</h2>
+      <table class="tabla">
+        <thead><tr><th>Producto</th><th class="num">Cantidad</th><th class="num">Precio</th><th class="num">Subtotal</th><th></th></tr></thead>
+        <tbody>
+          {% for linea in lineas %}
+            <tr>
+              <td>{{ linea.producto.nombre }}</td>
+              <td class="num">{{ linea.cantidad|cantidad:linea.producto.unidad }}</td>
+              <td class="num">{{ linea.precio|pesos }}</td>
+              <td class="num">{{ linea.subtotal|pesos }}</td>
+              <td class="num"><button type="button" class="enlace peligro" hx-post="{% url 'ventas:quitar' linea.indice %}" hx-target="#vender-cuerpo" aria-label="Quitar {{ linea.producto.nombre }}">Quitar</button></td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="5" class="vacio">Busca un producto o usa un atajo para empezar.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <form class="tarjeta resumen-venta" hx-post="{% url 'ventas:guardar' %}" hx-target="#vender-cuerpo" hx-disabled-elt="find button[type=submit]">
+    <span class="ayuda" style="margin: 0">Total de la venta</span>
+    <div class="total-venta">{{ total|pesos }}</div>
+    <span class="ayuda" style="margin: 0">{{ lineas|length }} producto{{ lineas|length|pluralize }}</span>
+    <hr class="separador">
+    {% if puede_fiar %}
+      <label class="casilla"><input type="checkbox" name="es_fiado" data-alterna="bloque-cliente"{% if cliente_actual %} checked{% endif %}> Es fiado (queda como deuda del cliente)</label>
+      <div id="bloque-cliente" class="{% if not cliente_actual %}oculto{% endif %}" style="margin-top: 14px">
+        <label for="buscar-cliente">Cliente</label>
+        <input id="buscar-cliente" type="search" name="q" placeholder="Escribe el nombre…" autocomplete="off"
+               hx-get="{% url 'ventas:buscar_clientes' %}" hx-trigger="input changed delay:250ms, focus once" hx-target="#lista-clientes" hx-include="this">
+        <ul id="lista-clientes" class="lista-clientes">
+          {% if cliente_actual %}<li><label><input type="radio" name="cliente_id" value="{{ cliente_actual.pk }}" checked>{{ cliente_actual.nombre }}</label></li>{% endif %}
+        </ul>
+        <div class="campo" style="margin-top: 12px">
+          <label for="cliente-nuevo">¿No está? Créalo</label>
+          <input id="cliente-nuevo" type="text" name="cliente_nuevo" placeholder="Nombre del cliente" autocomplete="off">
+          <div class="ayuda">Busca primero para no repetir clientes.</div>
+        </div>
+      </div>
+    {% endif %}
+    <div class="pie">
+      {% if error_guardar %}<div class="errores" role="alert">{{ error_guardar }}</div>{% endif %}
+      <button type="submit" class="boton ancho"{% if not lineas %} disabled{% endif %}>{% if venta_corregida %}Guardar corrección{% else %}Guardar venta{% endif %}</button>
+      <button type="button" class="boton secundario ancho" hx-post="{% url 'ventas:vaciar' %}" hx-target="#vender-cuerpo" hx-confirm="¿Vaciar la venta en curso?">{% if venta_corregida %}Cancelar corrección{% else %}Vaciar{% endif %}</button>
+    </div>
+  </form>
+</div>

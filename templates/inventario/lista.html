@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block titulo %}Inventario{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+  <h1>Inventario</h1>
+  {% if puede_crear %}<a class="boton" href="{% url 'inventario:nuevo_producto' %}">+ Nuevo producto</a>{% endif %}
+</div>
+<section class="tarjeta">
+  <label for="buscar">Buscar producto</label>
+  <input id="buscar" type="search" name="q" value="{{ q }}" placeholder="Escribe parte del nombre…" autocomplete="off"
+         hx-get="{% url 'inventario:lista' %}" hx-trigger="input changed delay:250ms, search" hx-target="#tabla-inventario" hx-push-url="true">
+  <p class="ayuda" style="margin-bottom: 10px">La cantidad es «según lo registrado»: lo que llegó menos lo que se vendió y se ajustó. No es un conteo físico.</p>
+  <div id="tabla-inventario">{% include "inventario/_tabla.html" %}</div>
+</section>
+{% endblock %}

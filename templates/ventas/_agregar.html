@@ -1,0 +1,29 @@
+{% load formato %}
+<form id="agregar" hx-post="{% url 'ventas:agregar' %}" hx-target="#vender-cuerpo">
+  {% if error_agregar %}<div class="errores" role="alert">{{ error_agregar }}</div>{% endif %}
+  <div class="agregar">
+    <div class="buscador">
+      <label for="buscar-producto">Producto</label>
+      {% if producto %}
+        <input type="hidden" name="producto_id" value="{{ producto.pk }}">
+        <div class="producto-elegido">
+          <span>{{ producto.nombre }}</span>
+          <button type="button" class="enlace" hx-get="{% url 'ventas:seleccionar_producto' 0 %}" hx-target="#agregar" hx-swap="outerHTML">Cambiar</button>
+        </div>
+      {% else %}
+        <input id="buscar-producto" type="search" name="q" placeholder="Buscar…" autocomplete="off" autofocus
+               hx-get="{% url 'ventas:buscar_productos' %}" hx-trigger="input changed delay:200ms" hx-target="#resultados" hx-include="this">
+        <ul id="resultados" class="resultados"></ul>
+      {% endif %}
+    </div>
+    <div>
+      <label for="cantidad">Cantidad{% if producto %} ({{ producto.unidad|abreviatura }}){% endif %}</label>
+      <input id="cantidad" type="text" name="cantidad" inputmode="decimal" autocomplete="off" value="{% if producto %}1{% endif %}"{% if producto %} autofocus{% endif %}>
+    </div>
+    <div>
+      <label for="precio">Precio ($)</label>
+      <input id="precio" type="text" name="precio" inputmode="numeric" autocomplete="off" value="{% if producto %}{{ producto.precio|pesos|cut:'$ ' }}{% endif %}">
+    </div>
+    <button type="submit" class="boton"{% if not producto %} disabled{% endif %}>+ Agregar</button>
+  </div>
+</form>

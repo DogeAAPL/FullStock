@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load formato %}
+{% block titulo %}Ventas de hoy{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+  <h1>Ventas de hoy</h1>
+  <div class="acciones">
+    <span class="fecha-hoy">{{ resumen.cantidad }} venta{{ resumen.cantidad|pluralize }} · {{ resumen.total|pesos }}{% if resumen.fiado %} (incluye {{ resumen.fiado|pesos }} fiado){% endif %}</span>
+    <a class="boton secundario" href="{% url 'ventas:vender' %}">← Volver a vender</a>
+  </div>
+</div>
+<section class="tarjeta">
+  <table class="tabla">
+    <thead><tr><th>Hora</th><th>Detalle</th><th class="num">Total</th><th>Fiado</th><th>Registró</th><th></th></tr></thead>
+    <tbody>
+      {% for venta in ventas %}
+        <tr class="{% if venta.anulada %}anulada{% endif %}">
+          <td>{{ venta.fecha|hora }}</td>
+          <td>{% for linea in venta.lineas.all|slice:":2" %}{{ linea.producto.nombre }} {{ linea.cantidad|cantidad:linea.producto.unidad }}{% if not forloop.last %} · {% endif %}{% endfor %}{% with n=venta.lineas.all|length %}{% if n > 2 %} · +{{ n|add:"-2" }} más{% endif %}{% endwith %}</td>
+          <td class="num">{{ venta.total|pesos }}</td>
+          <td>{% if venta.es_fiado %}<span class="etiqueta-estado amarilla">Fiado · {{ venta.cliente.nombre }}</span>{% else %}—{% endif %}</td>
+          <td>{{ venta.usuario.nombre }}</td>
+          <td class="num sin-tachar">
+            {% if venta.anulada %}
+              <span class="etiqueta-estado peligro" title="{{ venta.motivo_anulacion }}">Anulada por {{ venta.anulada_por.nombre }}</span>
+            {% elif puede_anular %}
+              <form method="post" action="{% url 'ventas:corregir' venta.pk %}" style="display: inline">{% csrf_token %}<button type="submit" class="enlace">Corregir</button></form>
+              &nbsp;
+              <button type="button" class="enlace peligro" hx-get="{% url 'ventas:anular' venta.pk %}" hx-target="#modal-contenido">Anular</button>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6" class="vacio">Todavía no hay ventas hoy.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

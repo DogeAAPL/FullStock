@@ -1,0 +1,6 @@
+{% load formato %}
+{% for c in clientes %}
+  <li><label><input type="radio" name="cliente_id" value="{{ c.pk }}">{{ c.nombre }}<span class="ayuda" style="margin:0">debe {{ c.saldo|pesos }}</span></label></li>
+{% empty %}
+  <li class="ayuda">No hay clientes con ese nombre. Créalo abajo.</li>
+{% endfor %}

@@ -1,0 +1,16 @@
+{% extends "base_acceso.html" %}
+{% block titulo %}Crea tu usuario{% endblock %}
+{% block contenido %}
+<h1>Crea tu usuario</h1>
+<p class="subtitulo">Es la primera vez que se abre la app. Este usuario será el dueño.</p>
+<form method="post" novalidate>
+  {% csrf_token %}
+  {% include "_errores_form.html" %}
+  {% include "_campo.html" with campo=form.nombre %}
+  {% include "_campo.html" with campo=form.usuario %}
+  {% include "_campo.html" with campo=form.pin %}
+  {% include "_campo.html" with campo=form.pin_repetido %}
+  <button type="submit" class="boton ancho">Crear usuario</button>
+  <p class="ayuda" style="color: var(--azul); margin-top: 14px">Al crearlo te daremos una clave de recuperación para que la guardes en papel.</p>
+</form>
+{% endblock %}

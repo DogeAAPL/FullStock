@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block titulo %}Sin permiso{% endblock %}
+{% block contenido %}
+<div class="tarjeta" style="max-width: 560px">
+  <h1>No tienes permiso para esta pantalla</h1>
+  <p>Si la necesitas, pídele al dueño que la active para tu usuario.</p>
+  <a class="boton secundario" href="{% url 'inicio' %}">Volver al inicio</a>
+</div>
+{% endblock %}

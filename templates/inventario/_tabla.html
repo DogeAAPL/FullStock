@@ -1,0 +1,24 @@
+{% load formato %}
+<table class="tabla">
+  <thead><tr><th>Producto</th><th class="num">Cantidad</th><th class="num">Precio</th><th>Último conteo</th><th></th></tr></thead>
+  <tbody>
+    {% for p in pagina %}
+      <tr>
+        <td>{{ p.nombre }}</td>
+        <td class="num">{% if p.existencia < 0 %}<span class="etiqueta-estado peligro" title="Hay más vendido que registrado: conviene contar">{{ p.existencia|cantidad:p.unidad }}</span>{% else %}{{ p.existencia|cantidad:p.unidad }}{% endif %}</td>
+        <td class="num">{{ p.precio|pesos }} <span class="ayuda" style="display:inline">/ {{ p.unidad|abreviatura }}</span></td>
+        <td>{% if p.ultimo_conteo %}{{ p.ultimo_conteo|dia_mes }}{% else %}Sin conteo{% endif %}</td>
+        <td class="num"><button type="button" class="enlace" hx-get="{% url 'inventario:corregir' p.pk %}" hx-target="#modal-contenido">Corregir</button></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5" class="vacio">{% if q %}No hay productos que coincidan con «{{ q }}».{% else %}Todavía no hay productos.{% endif %}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% if pagina.has_other_pages %}
+  <nav class="paginacion" aria-label="Páginas">
+    {% if pagina.has_previous %}<a href="?q={{ q|urlencode }}&pagina={{ pagina.previous_page_number }}">← Anterior</a>{% endif %}
+    <span>Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+    {% if pagina.has_next %}<a href="?q={{ q|urlencode }}&pagina={{ pagina.next_page_number }}">Siguiente →</a>{% endif %}
+  </nav>
+{% endif %}

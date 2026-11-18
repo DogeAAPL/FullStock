@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block titulo %}Configuración{% endblock %}
+{% block contenido %}
+<div class="encabezado"><h1>Configuración</h1></div>
+<form method="post" novalidate>
+  {% csrf_token %}
+  <div class="rejilla-2" style="grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)">
+    <section class="tarjeta">
+      <h2>Sesiones y seguridad</h2>
+      {% include "_errores_form.html" %}
+      {% include "_campo.html" with campo=form.minutos_inactividad %}
+      {% include "_campo.html" with campo=form.intentos_pin %}
+      {% include "_campo.html" with campo=form.minutos_bloqueo %}
+      <p class="ayuda">Los valores tienen límites para que la app no quede insegura por accidente.</p>
+    </section>
+    <section class="tarjeta">
+      <h2>Ventas, fiados y respaldos</h2>
+      <label class="casilla campo">{{ form.vender_sin_existencia }} {{ form.vender_sin_existencia.label }}</label>
+      <p class="ayuda" style="margin-top: -8px; margin-bottom: 16px">{{ form.vender_sin_existencia.help_text }}</p>
+      {% include "_campo.html" with campo=form.limite_deuda %}
+      {% include "_campo.html" with campo=form.horas_respaldo %}
+      {% include "_campo.html" with campo=form.carpeta_usb %}
+    </section>
+  </div>
+  <div style="margin-top: 20px"><button type="submit" class="boton">Guardar configuración</button></div>
+</form>
+{% endblock %}

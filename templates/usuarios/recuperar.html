@@ -1,0 +1,16 @@
+{% extends "base_acceso.html" %}
+{% block titulo %}Recuperar acceso{% endblock %}
+{% block contenido %}
+<h1>Recuperar acceso</h1>
+<p class="subtitulo">Solo para el dueño. Los colaboradores le piden al dueño que les cambie el PIN.</p>
+<form method="post" novalidate>
+  {% csrf_token %}
+  {% include "_errores_form.html" %}
+  {% include "_campo.html" with campo=form.usuario %}
+  {% include "_campo.html" with campo=form.clave %}
+  {% include "_campo.html" with campo=form.pin %}
+  {% include "_campo.html" with campo=form.pin_repetido %}
+  <button type="submit" class="boton ancho">Cambiar PIN</button>
+  <p style="margin-top: 14px"><a href="{% url 'usuarios:login' %}">Volver a iniciar sesión</a></p>
+</form>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% load formato %}
+<form hx-post="{% url 'inventario:corregir' producto.pk %}" hx-target="#modal-contenido">
+  <h2>Corregir cantidad</h2>
+  <div style="display: flex; justify-content: space-between; margin-bottom: 16px">
+    <strong>{{ producto.nombre }}</strong>
+    <span class="ayuda" style="margin: 0">Registrado: {{ producto.existencia|cantidad:producto.unidad }}</span>
+  </div>
+  {% include "_errores_form.html" %}
+  <div class="campo">
+    <label for="{{ form.nueva_cantidad.id_for_label }}">Nueva cantidad ({{ producto.unidad|abreviatura }})</label>
+    {{ form.nueva_cantidad }}
+  </div>
+  <div class="campo">
+    <span class="etiqueta">Motivo</span>
+    <div class="pildoras">{% for opcion in form.motivo %}<label for="{{ opcion.id_for_label }}">{{ opcion.tag }}{{ opcion.choice_label }}</label>{% endfor %}</div>
+  </div>
+  <p class="ayuda">Se guarda con tu nombre y la hora. La cantidad anterior no se pierde.</p>
+  <div class="acciones-modal">
+    <button type="submit" class="boton">Confirmar corrección</button>
+    <button type="button" class="boton secundario" data-cerrar-modal>Cancelar</button>
+  </div>
+</form>

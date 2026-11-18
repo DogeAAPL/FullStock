@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block titulo %}Registrar venta{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+  <h1>Registrar venta</h1>
+  <div class="acciones">
+    <span class="fecha-hoy">Hoy · {{ hoy|date:"d/m/Y" }}</span>
+    <a class="boton secundario" href="{% url 'ventas:hoy' %}">Ventas de hoy ({{ resumen.cantidad }})</a>
+  </div>
+</div>
+<div id="vender-cuerpo">{% include "ventas/_cuerpo.html" %}</div>
+{% endblock %}

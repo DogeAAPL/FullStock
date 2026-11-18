@@ -1,0 +1,14 @@
+{% extends "base_acceso.html" %}
+{% block titulo %}Iniciar sesión{% endblock %}
+{% block contenido %}
+<h1>Iniciar sesión</h1>
+<p class="subtitulo">Entra con tu usuario y tu PIN de 4 dígitos</p>
+<form method="post" novalidate>
+  {% csrf_token %}
+  {% include "_errores_form.html" %}
+  {% include "_campo.html" with campo=form.usuario %}
+  {% include "_campo.html" with campo=form.pin %}
+  <button type="submit" class="boton ancho">Entrar</button>
+  <p style="margin-top: 14px"><a href="{% url 'usuarios:recuperar' %}">¿Olvidó su PIN? Use la clave de recuperación</a></p>
+</form>
+{% endblock %}

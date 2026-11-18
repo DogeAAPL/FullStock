@@ -1,0 +1,9 @@
+{% extends "base_acceso.html" %}
+{% block titulo %}Clave de recuperación{% endblock %}
+{% block contenido %}
+<h1>Guarda esta clave en papel</h1>
+<p class="subtitulo">Si olvidas tu PIN, con esta clave podrás entrar y poner uno nuevo. Solo se muestra esta vez.</p>
+<div class="clave">{{ clave }}</div>
+<div class="aviso"><div><strong>No la guardes en este computador</strong>Escríbela y guárdala en un lugar seguro, lejos del mostrador.</div></div>
+<a class="boton ancho" href="{% url 'inicio' %}">Ya la anoté, continuar</a>
+{% endblock %}

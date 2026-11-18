@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block titulo %}Nuevo producto{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+  <h1>Nuevo producto</h1>
+  <a class="boton secundario" href="{% url 'inventario:lista' %}">← Volver al inventario</a>
+</div>
+<div class="rejilla-2">
+  <section class="tarjeta">
+    <h2>Datos del producto</h2>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% include "_errores_form.html" %}
+      <div class="campo">
+        <label for="{{ form.nombre.id_for_label }}">Nombre *</label>
+        <input type="text" name="nombre" id="{{ form.nombre.id_for_label }}" value="{{ form.nombre.value|default:'' }}" maxlength="120" autocomplete="off" required
+               hx-get="{% url 'inventario:similares' %}" hx-trigger="input changed delay:300ms" hx-target="#similares">
+        {{ form.nombre.errors }}
+      </div>
+      <div id="similares"></div>
+      <div class="campo">
+        <span class="etiqueta">Unidad de medida *</span>
+        <div class="pildoras">{% for opcion in form.unidad %}<label for="{{ opcion.id_for_label }}">{{ opcion.tag }}{{ opcion.choice_label }}</label>{% endfor %}</div>
+      </div>
+      <div class="fila-campos">
+        {% include "_campo.html" with campo=form.precio %}
+        {% include "_campo.html" with campo=form.cantidad_inicial %}
+      </div>
+      <div style="display: flex; gap: 12px; margin-top: 10px">
+        <button type="submit" class="boton">Guardar producto</button>
+        <a class="boton secundario" href="{% url 'inventario:lista' %}">Cancelar</a>
+      </div>
+    </form>
+  </section>
+  <aside class="tarjeta">
+    <h2>Para tener en cuenta</h2>
+    <p>Los productos se buscan solo por nombre. No hace falta código de barras.</p>
+    <p>Si se vende por peso, la cantidad acepta decimales con coma (por ejemplo 1,5 kg). La libra se cuenta como 500 g.</p>
+    <p>El precio de venta es por la unidad elegida y se puede cambiar en cada venta.</p>
+  </aside>
+</div>
+{% endblock %}

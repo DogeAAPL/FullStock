@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block titulo %}Usuarios y permisos{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+  <h1>Usuarios y permisos</h1>
+  <a class="boton" href="{% url 'usuarios:nuevo' %}">+ Nuevo usuario</a>
+</div>
+<div class="rejilla-2" style="grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr)">
+  <section class="tarjeta">
+    <h2>Quién puede entrar</h2>
+    <table class="tabla">
+      <thead><tr><th>Nombre</th><th>Usuario</th><th>Rol</th><th></th></tr></thead>
+      <tbody>
+        {% for fila in filas %}
+          {% with u=fila.usuario %}
+          <tr>
+            <td>{{ u.nombre }}{% if not u.is_active %} <span class="etiqueta-estado peligro">Inactivo</span>{% endif %}</td>
+            <td>{{ u.usuario }}</td>
+            <td><span class="etiqueta-estado{% if u.es_dueno %} dueno{% endif %}">{{ u.rol }}</span></td>
+            <td>{% if not u.es_dueno %}<a href="{% url 'usuarios:editar' u.pk %}">Editar</a>{% endif %}</td>
+          </tr>
+          {% endwith %}
+        {% endfor %}
+      </tbody>
+    </table>
+    <p class="ayuda">Cada persona entra con su usuario y su PIN. Lo que hace cada una queda registrado a su nombre.</p>
+  </section>
+
+  <section class="tarjeta">
+    <h2>Qué puede hacer cada uno</h2>
+    <table class="tabla">
+      <thead>
+        <tr><th>Función</th>{% for fila in filas %}<th class="num">{{ fila.usuario.nombre }}</th>{% endfor %}</tr>
+      </thead>
+      <tbody>
+        {% for permiso in catalogo %}
+          <tr>
+            <td>{{ permiso.nombre }}</td>
+            {% for fila in filas %}
+              <td class="num">{% if permiso.codigo in fila.permisos %}<span style="color: var(--exito)" aria-label="Sí">✓</span>{% else %}<span style="color: var(--texto-suave)" aria-label="No">—</span>{% endif %}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+        <tr>
+          <td>Usuarios y configuración</td>
+          {% for fila in filas %}<td class="num">{% if fila.usuario.es_dueno %}<span style="color: var(--exito)">✓</span>{% else %}<span style="color: var(--texto-suave)">—</span>{% endif %}</td>{% endfor %}
+        </tr>
+      </tbody>
+    </table>
+    <p class="ayuda">Para cambiar lo que puede hacer un colaborador, entra a «Editar».</p>
+  </section>
+</div>
+{% endblock %}
