@@ -25,8 +25,8 @@ RUTA_DATOS.mkdir(parents=True, exist_ok=True)
 
 DEBUG = _env("DEBUG", "0") == "1"
 
-# Nombre que se muestra en el menú lateral.
-TIENDA_NOMBRE = _env("TIENDA_NOMBRE", "El Papayal")
+# Nombre opcional del negocio; se muestra bajo el logo de FullStock en el menú.
+TIENDA_NOMBRE = _env("TIENDA_NOMBRE", "")
 
 # Modo demostración: la pantalla de entrada muestra usuarios y PIN de prueba.
 DEMO = _env("DEMO", "0") == "1"

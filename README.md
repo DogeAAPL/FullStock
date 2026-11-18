@@ -55,7 +55,7 @@ uv run python manage.py verificar_saldos   # existencias contra movimientos
 | --- | --- | --- |
 | `FULLSTOCK_DATA_DIR` | Carpeta de la base de datos, clave secreta y registros | `./datos` |
 | `FULLSTOCK_DEBUG` | `1` solo para desarrollar | `0` |
-| `FULLSTOCK_TIENDA_NOMBRE` | Nombre en el menú lateral | `El Papayal` |
+| `FULLSTOCK_TIENDA_NOMBRE` | Nombre del negocio, bajo el logo (opcional) | vacío |
 | `FULLSTOCK_SECRET_KEY` | Clave secreta; si no está, se genera una por instalación | generada |
 | `FULLSTOCK_ALLOWED_HOSTS` | Hosts permitidos, separados por coma | `127.0.0.1,localhost` |
 

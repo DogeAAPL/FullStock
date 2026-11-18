@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block titulo %}FullStock{% endblock %} · {{ tienda_nombre }}</title>
-  <link rel="icon" href="data:,">
+  <title>{% block titulo %}Inicio{% endblock %} · FullStock</title>
+  <link rel="icon" href="{% static 'img/logo.svg' %}" type="image/svg+xml">
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
   <script src="{% static 'js/htmx.min.js' %}" defer></script>
   <script src="{% static 'js/app.js' %}" defer></script>
@@ -13,8 +13,11 @@
 <div class="app">
   <aside class="lateral">
     <div class="marca">
-      <strong>{{ tienda_nombre }}</strong>
-      <span>Inventario y ventas</span>
+      <img src="{% static 'img/logo.svg' %}" alt="" width="38" height="38">
+      <div>
+        <strong class="marca-nombre">Full<span>Stock</span></strong>
+        <small>{{ tienda_nombre|default:"Inventario y ventas" }}</small>
+      </div>
     </div>
     <nav aria-label="Menú principal">
       <ul class="menu">

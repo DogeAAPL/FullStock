@@ -3,15 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block titulo %}Entrar{% endblock %} · {{ tienda_nombre }}</title>
-  <link rel="icon" href="data:,">
+  <title>{% block titulo %}Entrar{% endblock %} · FullStock</title>
+  <link rel="icon" href="{% static 'img/logo.svg' %}" type="image/svg+xml">
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
 </head>
 <body>
 <div class="acceso">
   <div class="acceso-marca">
-    <div class="logo"><img src="{% static 'img/logo.jpg' %}" alt="Logo de la tienda {{ tienda_nombre }}"></div>
-    <p>Inventario, pedidos y ventas del negocio</p>
+    <div class="logo">
+      <img src="{% static 'img/logo.svg' %}" alt="" width="96" height="96">
+      <strong class="marca-nombre">Full<span>Stock</span></strong>
+    </div>
+    <p>Inventario, pedidos y ventas{% if tienda_nombre %} de {{ tienda_nombre }}{% else %} del negocio{% endif %}</p>
   </div>
   <div class="acceso-formulario">
     <div class="caja">
