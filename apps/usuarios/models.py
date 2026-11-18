@@ -19,6 +19,12 @@ class UsuarioManager(BaseUserManager):
         return self.create_user(usuario, nombre, password, es_dueno=True, **extra)
 
 
+class Tema(models.TextChoices):
+    SISTEMA = "sistema", "Igual que el computador"
+    CLARO = "claro", "Claro"
+    OSCURO = "oscuro", "Oscuro"
+
+
 class Usuario(AbstractBaseUser, PermissionsMixin):
     """Persona que entra a la app con su usuario y un PIN de 4 dígitos.
 
@@ -33,6 +39,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     intentos_fallidos = models.PositiveSmallIntegerField(default=0)
     bloqueado_hasta = models.DateTimeField(null=True, blank=True)
     clave_recuperacion = models.CharField(max_length=128, blank=True)
+    tema = models.CharField("apariencia", max_length=10, choices=Tema.choices, default=Tema.SISTEMA)
     creado_en = models.DateTimeField(auto_now_add=True)
 
     objects = UsuarioManager()

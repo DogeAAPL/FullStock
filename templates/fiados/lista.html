@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load formato %}
+{% block titulo %}Fiados{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+  <h1>Fiados</h1>
+  <span class="fecha-hoy">Por cobrar: <strong>{{ total|pesos }}</strong></span>
+</div>
+<div class="rejilla-2">
+  <section class="tarjeta">
+    <h2>Lista de cobros</h2>
+    <form class="acciones" style="margin-bottom: 12px" hx-get="{% url 'fiados:lista' %}" hx-target="#tabla-fiados" hx-trigger="input changed delay:250ms from:#buscar-cliente, change">
+      <input id="buscar-cliente" type="search" name="q" value="{{ q }}" placeholder="Buscar cliente…" autocomplete="off">
+      <label class="casilla" style="margin: 0; white-space: nowrap"><input type="checkbox" name="todos" value="1"{% if todos %} checked{% endif %}> Ver también los que no deben</label>
+    </form>
+    <div id="tabla-fiados">{% include "fiados/_tabla.html" %}</div>
+  </section>
+  <section class="tarjeta">
+    <h2>Nuevo cliente</h2>
+    <form method="post" action="{% url 'fiados:nuevo_cliente' %}" novalidate>
+      {% csrf_token %}
+      {% include "_campo.html" with campo=form.nombre %}
+      {% include "_campo.html" with campo=form.telefono %}
+      <button type="submit" class="boton ancho">Crear cliente</button>
+    </form>
+    <p class="ayuda">También se crean desde «Vender» al marcar una venta como fiada.</p>
+  </section>
+</div>
+{% endblock %}

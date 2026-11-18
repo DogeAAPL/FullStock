@@ -1,0 +1,17 @@
+{% load formato %}
+<table class="tabla">
+  <thead><tr><th>Cliente</th><th>Teléfono</th><th class="num">Debe</th><th>Último movimiento</th><th></th></tr></thead>
+  <tbody>
+    {% for c in clientes %}
+      <tr>
+        <td>{{ c.nombre }}{% if limite and c.saldo > limite %} <span class="etiqueta-estado peligro">Supera el límite</span>{% endif %}</td>
+        <td>{{ c.telefono|default:"—" }}</td>
+        <td class="num">{% if c.saldo < 0 %}<span class="etiqueta-estado verde">A favor {{ c.saldo|pesos|cut:"-" }}</span>{% else %}{{ c.saldo|pesos }}{% endif %}</td>
+        <td>{% if c.ultimo_movimiento %}{{ c.ultimo_movimiento|dia_mes }}{% else %}—{% endif %}</td>
+        <td class="num"><a href="{% url 'fiados:cliente' c.pk %}">Ver y abonar</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5" class="vacio">{% if q %}No hay clientes con «{{ q }}».{% else %}Nadie debe nada.{% endif %}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>

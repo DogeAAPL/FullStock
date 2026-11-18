@@ -39,3 +39,16 @@ def solo_dueno(vista):
 
     envoltura.permiso_requerido = "solo_dueno"
     return envoltura
+
+
+def solo_autenticado(vista):
+    """Para preferencias personales que cualquier usuario puede cambiar."""
+
+    @wraps(vista)
+    def envoltura(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect_to_login(request.get_full_path())
+        return vista(request, *args, **kwargs)
+
+    envoltura.permiso_requerido = "autenticado"
+    return envoltura

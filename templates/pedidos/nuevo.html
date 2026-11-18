@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load formato %}
+{% block titulo %}Nuevo pedido{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+  <h1>Nuevo pedido</h1>
+  <a class="boton secundario" href="{% url 'pedidos:pendientes' %}">← Volver a pendientes</a>
+</div>
+{% if sin_proveedores %}
+  <div class="aviso"><div><strong>Primero registra un proveedor</strong>Para hacer un pedido necesitas al menos un proveedor. <a href="{% url 'pedidos:proveedores' %}">Registrar proveedor</a></div></div>
+{% endif %}
+<form id="pedido-form" method="post" novalidate>
+  {% csrf_token %}
+  <div class="rejilla-2">
+    <section class="tarjeta">
+      <h2>Datos del pedido</h2>
+      {% include "_errores_form.html" %}
+      <div class="campo">
+        <label for="buscar-producto-pedido">Producto</label>
+        <div id="producto-pedido" class="buscador">{% include "pedidos/_producto.html" %}</div>
+      </div>
+      <div class="fila-campos">
+        {% include "_campo.html" with campo=form.cantidad %}
+        {% include "_campo.html" with campo=form.costo_unitario %}
+      </div>
+      <div class="fila-campos">
+        {% include "_campo.html" with campo=form.proveedor_id %}
+        {% include "_campo.html" with campo=form.fecha_pedido %}
+      </div>
+      <div class="acciones">
+        <span class="etiqueta-estado dueno">Registra: {{ user.nombre }} (tú)</span>
+        <span class="ayuda" style="margin: 0">El costo es obligatorio. Si el pedido fue antes, cambia la fecha.</span>
+      </div>
+    </section>
+    <aside class="tarjeta resumen-venta" style="min-height: 0">
+      <div id="resumen-pedido" hx-get="{% url 'pedidos:resumen' %}" hx-include="#pedido-form"
+           hx-trigger="load, input changed delay:300ms from:#pedido-form, change from:#pedido-form, htmx:afterSettle from:#producto-pedido">
+        {% include "pedidos/_resumen.html" %}
+      </div>
+      <div class="pie" style="margin-top: 22px">
+        <button type="submit" class="boton ancho">Guardar pedido</button>
+        <a class="boton secundario ancho" href="{% url 'pedidos:pendientes' %}">Cancelar</a>
+      </div>
+    </aside>
+  </div>
+</form>
+{% endblock %}

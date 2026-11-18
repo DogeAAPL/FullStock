@@ -9,4 +9,6 @@ urlpatterns = [
     path("<int:pk>/corregir/", views.corregir, name="corregir"),
     path("nuevo/", views.nuevo_producto, name="nuevo_producto"),
     path("similares/", views.similares, name="similares"),
+    path("cargar/", views.cargar, name="cargar"),
+    path("cargar/formato/", views.formato_ejemplo, name="formato"),
 ]

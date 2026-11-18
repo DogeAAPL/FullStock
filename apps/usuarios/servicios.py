@@ -15,7 +15,7 @@ from apps.nucleo.errores import ReglaNegocio
 from apps.nucleo.models import Configuracion
 from apps.nucleo.permisos import APP_LABEL, CODIGOS, POR_DEFECTO
 
-from .models import Usuario
+from .models import Tema, Usuario
 
 _PIN = re.compile(r"^\d{4}$")
 _USUARIO = re.compile(r"^[a-z0-9._-]{3,30}$")
@@ -182,6 +182,17 @@ def asignar_permisos(por: Usuario, colaborador: Usuario, codigos: Iterable[str])
         activados=sorted(nuevos - antes),
         desactivados=sorted(antes - nuevos),
     )
+
+
+# --- Preferencias personales ------------------------------------------------
+
+
+def cambiar_tema(usuario: Usuario, tema: str) -> None:
+    """Cada persona elige su apariencia; no afecta a los demás."""
+    if tema not in Tema.values:
+        raise ReglaNegocio("Apariencia no válida.")
+    Usuario.objects.filter(pk=usuario.pk).update(tema=tema)
+    usuario.tema = tema
 
 
 # --- Inicio de sesión -------------------------------------------------------

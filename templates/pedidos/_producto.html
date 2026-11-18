@@ -1,0 +1,17 @@
+{% load formato %}
+{% if producto %}
+  <input type="hidden" name="producto_id" value="{{ producto.pk }}">
+  <div class="producto-elegido">
+    <span>{{ producto.nombre }} <span class="ayuda" style="display: inline">· se mide en {{ producto.unidad|abreviatura }} · hay {{ producto.existencia|cantidad:producto.unidad }}</span></span>
+    <button type="button" class="enlace" hx-get="{% url 'pedidos:elegir_producto' 0 %}" hx-target="#producto-pedido">Cambiar</button>
+  </div>
+  {% for p in ya_pedidos %}
+    {% if forloop.first %}<div class="aviso" style="margin-top: 12px"><div><strong>Ya pediste este producto</strong>{% endif %}
+    {{ p.cantidad|cantidad:producto.unidad }} a {{ p.proveedor.nombre }} el {{ p.fecha_pedido|date:"d/m" }}, todavía sin llegar.{% if not forloop.last %}<br>{% endif %}
+    {% if forloop.last %} Puedes continuar si quieres pedir otra vez.</div></div>{% endif %}
+  {% endfor %}
+{% else %}
+  <input id="buscar-producto-pedido" type="search" name="q" placeholder="Buscar producto…" autocomplete="off"
+         hx-get="{% url 'pedidos:buscar_productos' %}" hx-trigger="input changed delay:200ms" hx-target="#resultados-pedido" hx-include="this">
+  <ul id="resultados-pedido" class="resultados"></ul>
+{% endif %}

@@ -45,7 +45,10 @@ class MovimientoFiado(models.Model):
 
     class Meta:
         ordering = ["-fecha", "-id"]
-        indexes = [models.Index(fields=["cliente", "fecha"], name="movfiado_cliente_fecha")]
+        indexes = [
+            models.Index(fields=["cliente", "fecha"], name="movfiado_cliente_fecha"),
+            models.Index(fields=["tipo", "fecha"], name="movfiado_tipo_fecha"),
+        ]
         constraints = [
             models.CheckConstraint(condition=~Q(monto=0), name="movfiado_monto_no_cero"),
         ]

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load formato %}
+{% block titulo %}Estadísticas{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+  <h1>Estadísticas</h1>
+  <nav class="pildoras" aria-label="Periodo">
+    {% for p in periodos %}<a class="chip{% if p == dias %} activo{% endif %}" href="?dias={{ p }}">Últimos {{ p }} días</a>{% endfor %}
+  </nav>
+</div>
+<p class="ayuda" style="margin-top: -8px">Del {{ e.desde|date:"d/m/Y" }} al {{ e.hasta|date:"d/m/Y" }}. No incluye ventas anuladas.</p>
+<section class="tarjeta" style="margin-bottom: 20px">
+  <div class="indicadores">
+    <div><span>Total vendido</span><strong>{{ e.total|pesos }}</strong></div>
+    <div><span>Ventas</span><strong>{{ e.cantidad }}</strong></div>
+    <div><span>Venta promedio</span><strong>{{ e.ticket_promedio|pesos }}</strong></div>
+    <div><span>Vendido fiado</span><strong>{{ e.fiado|pesos }}</strong></div>
+    <div><span>Abonos recibidos</span><strong>{{ e.abonos|pesos }}</strong></div>
+    <div><span>Gasto en pedidos</span><strong>{{ e.gastos|pesos }}</strong></div>
+    <div><span>Pérdidas y daños</span><strong>{{ e.mermas|pesos }}</strong></div>
+    <div><span>Por cobrar hoy</span><strong>{{ e.por_cobrar|pesos }}</strong></div>
+  </div>
+</section>
+<section class="tarjeta" style="margin-bottom: 20px">
+  <h2>Ventas por día</h2>
+  <div class="grafico" role="img" aria-label="Ventas por día del periodo">
+    {% for d in e.por_dia %}
+      <div class="barra" title="{{ d.dia|date:'d/m' }}: {{ d.total|pesos }} en {{ d.n }} venta{{ d.n|pluralize }}">
+        <span style="height: {{ d.porcentaje }}%"></span>
+        {% if dias <= 30 %}<small>{{ d.dia|date:"d" }}</small>{% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  <p class="ayuda">Pasa el mouse sobre una barra para ver el valor del día.</p>
+</section>
+<div class="rejilla-2" style="grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr)">
+  <section class="tarjeta">
+    <h2>Productos que más venden</h2>
+    <table class="tabla">
+      <thead><tr><th>Producto</th><th class="num">Cantidad</th><th class="num">Veces</th><th class="num">Valor</th></tr></thead>
+      <tbody>
+        {% for p in e.productos %}
+          <tr><td>{{ p.producto__nombre }}</td><td class="num">{{ p.cantidad|cantidad:p.producto__unidad }}</td><td class="num">{{ p.veces }}</td><td class="num">{{ p.valor|pesos }}</td></tr>
+        {% empty %}
+          <tr><td colspan="4" class="vacio">Sin ventas en este periodo.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  <section class="tarjeta">
+    <h2>Ventas por persona</h2>
+    <table class="tabla">
+      <thead><tr><th>Registró</th><th class="num">Ventas</th><th class="num">Total</th></tr></thead>
+      <tbody>
+        {% for u in e.por_usuario %}
+          <tr><td>{{ u.usuario__nombre }}</td><td class="num">{{ u.n }}</td><td class="num">{{ u.suma|pesos }}</td></tr>
+        {% empty %}
+          <tr><td colspan="3" class="vacio">Sin ventas en este periodo.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+</div>
+{% endblock %}

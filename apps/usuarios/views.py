@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
-from apps.nucleo.decoradores import solo_dueno
+from apps.nucleo.decoradores import solo_autenticado, solo_dueno
 from apps.nucleo.errores import ReglaNegocio
 from apps.nucleo.models import Configuracion
 from apps.nucleo.permisos import CATALOGO, POR_DEFECTO
@@ -19,7 +19,7 @@ from .forms import (
     PrimerArranqueForm,
     RecuperarForm,
 )
-from .models import Usuario
+from .models import Tema, Usuario
 
 _SESION_CLAVE = "clave_recuperacion_pendiente"
 
@@ -163,4 +163,17 @@ def configuracion(request):
         else:
             messages.success(request, "Configuración guardada.")
             return redirect("usuarios:configuracion")
-    return render(request, "usuarios/configuracion.html", {"form": form})
+    return render(request, "usuarios/configuracion.html", {"form": form, "temas": Tema.choices})
+
+
+@require_POST
+@solo_autenticado
+def tema(request):
+    try:
+        servicios.cambiar_tema(request.user, request.POST.get("tema", ""))
+    except ReglaNegocio as error:
+        messages.error(request, str(error))
+    destino = request.POST.get("volver", "")
+    if not url_has_allowed_host_and_scheme(destino, allowed_hosts={request.get_host()}):
+        destino = "inicio"
+    return redirect(destino)

@@ -14,4 +14,5 @@ urlpatterns = [
     path("usuarios/nuevo/", views.nuevo, name="nuevo"),
     path("usuarios/<int:pk>/", views.editar, name="editar"),
     path("configuracion/", views.configuracion, name="configuracion"),
+    path("apariencia/", views.tema, name="tema"),
 ]

@@ -42,3 +42,14 @@ def hora(valor) -> str:
 @register.filter
 def dia_mes(valor) -> str:
     return timezone.localtime(valor).strftime("%d/%m") if valor else ""
+
+
+_ORIGENES = {"venta": "venta #{}", "anulacion": "anulación de la venta #{}", "pedido": "pedido #{}"}
+
+
+@register.filter
+def origen(valor: str) -> str:
+    """ "venta:15" -> "venta #15". Lo que no se reconoce se muestra igual."""
+    tipo, _, numero = (valor or "").partition(":")
+    plantilla = _ORIGENES.get(tipo)
+    return plantilla.format(numero) if plantilla and numero else valor

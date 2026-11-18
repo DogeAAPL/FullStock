@@ -75,3 +75,11 @@ def test_unidades_enteras():
 def test_normalizar():
     assert normalizar("  Atún   LATA ") == "atun lata"
     assert normalizar("Cebolla Cabezona") == "cebolla cabezona"
+
+
+def test_origen_legible():
+    from apps.nucleo.templatetags.formato import origen
+
+    assert origen("venta:15") == "venta #15"
+    assert origen("anulacion:3") == "anulación de la venta #3"
+    assert origen("abono") == "abono"

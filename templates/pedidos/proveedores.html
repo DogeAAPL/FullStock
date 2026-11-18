@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block titulo %}Proveedores{% endblock %}
+{% block contenido %}
+<div class="encabezado"><h1>Proveedores</h1></div>
+<div class="rejilla-2" style="grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr)">
+  <section class="tarjeta">
+    <h2>A quién le pides</h2>
+    <label for="buscar-proveedor">Buscar proveedor</label>
+    <input id="buscar-proveedor" type="search" name="q" value="{{ q }}" placeholder="Escribe el nombre…" autocomplete="off"
+           hx-get="{% url 'pedidos:proveedores' %}" hx-trigger="input changed delay:250ms, search" hx-target="#tabla-proveedores">
+    <div id="tabla-proveedores" style="margin-top: 10px">{% include "pedidos/_tabla_proveedores.html" %}</div>
+  </section>
+  <section class="tarjeta">
+    <h2>Nuevo proveedor</h2>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% include "_errores_form.html" %}
+      {% include "_campo.html" with campo=form.nombre %}
+      {% include "_campo.html" with campo=form.telefono %}
+      {% if repetidos %}
+        <div class="aviso"><div><strong>Ya existe un proveedor con ese nombre</strong>Revisa la lista. Si de verdad es otro, guarda de nuevo.</div></div>
+        <input type="hidden" name="confirmar" value="1">
+        <button type="submit" class="boton ancho">Guardar de todos modos</button>
+      {% else %}
+        <p class="ayuda">Si ya existe un proveedor con ese nombre, te avisamos antes de guardar.</p>
+        <button type="submit" class="boton ancho">Guardar proveedor</button>
+      {% endif %}
+    </form>
+  </section>
+</div>
+{% endblock %}

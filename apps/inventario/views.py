@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import OuterRef, Subquery
+from django.db.models import Exists, OuterRef, Subquery
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -13,8 +13,9 @@ from apps.nucleo.decoradores import requiere_permiso
 from apps.nucleo.dinero import leer_pesos
 from apps.nucleo.errores import ReglaNegocio
 from apps.nucleo.numeros import leer_numero
+from apps.pedidos.models import EstadoPedido, Pedido
 
-from . import servicios
+from . import carga, servicios
 from .forms import CorregirForm, NuevoProductoForm
 from .models import MotivoAjuste, MovimientoInventario, TipoMovimiento
 
@@ -31,7 +32,10 @@ def _productos_con_ultimo_conteo(texto: str):
         .order_by("-fecha")
         .values("fecha")[:1]
     )
-    return catalogo.buscar(texto, limite=None).annotate(ultimo_conteo=Subquery(ultimo_conteo))
+    pedido_pendiente = Pedido.objects.filter(producto=OuterRef("pk"), estado=EstadoPedido.PENDIENTE)
+    return catalogo.buscar(texto, limite=None).annotate(
+        ultimo_conteo=Subquery(ultimo_conteo), pedido_pendiente=Exists(pedido_pendiente)
+    )
 
 
 @requiere_permiso("inventario")
@@ -104,3 +108,52 @@ def similares(request):
         "inventario/_similares.html",
         {"similares": catalogo.similares(request.GET.get("nombre", ""))[:3]},
     )
+
+
+_SESION_CARGA = "carga_productos"
+
+
+@requiere_permiso("crear_productos")
+def cargar(request):
+    """Carga desde Excel/CSV en dos pasos: revisar el archivo y luego confirmar."""
+    contexto: dict = {}
+    if request.method == "POST" and request.POST.get("confirmar"):
+        filas = request.session.pop(_SESION_CARGA, [])
+        if not filas:
+            messages.error(
+                request, "No hay productos revisados para cargar. Sube el archivo otra vez."
+            )
+            return redirect("inventario:cargar")
+        try:
+            creados = carga.cargar(request.user, filas)
+        except ReglaNegocio as error:
+            messages.error(request, f"No se cargó nada: {error}")
+            return redirect("inventario:cargar")
+        plural = "s" if creados != 1 else ""
+        messages.success(request, f"{creados} producto{plural} cargado{plural}.")
+        return redirect("inventario:lista")
+    if request.method == "POST":
+        archivo = request.FILES.get("archivo")
+        if archivo is None:
+            contexto["error"] = "Elige un archivo."
+        else:
+            try:
+                revision = carga.revisar(archivo)
+            except ReglaNegocio as error:
+                contexto["error"] = str(error)
+            else:
+                request.session[_SESION_CARGA] = revision.a_sesion()
+                contexto["revision"] = revision
+                contexto["archivo"] = archivo.name
+    return render(request, "inventario/cargar.html", contexto)
+
+
+@requiere_permiso("crear_productos")
+@require_GET
+def formato_ejemplo(request):
+    respuesta = HttpResponse(
+        carga.formato_ejemplo(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    respuesta["Content-Disposition"] = 'attachment; filename="formato_productos.xlsx"'
+    return respuesta

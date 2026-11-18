@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load formato %}
+{% block titulo %}Recibir pedido{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+  <h1>Recibir pedido</h1>
+  <a class="boton secundario" href="{% url 'pedidos:pendientes' %}">← Volver a pendientes</a>
+</div>
+<form method="post" novalidate>
+  {% csrf_token %}
+  <div class="rejilla-2">
+    <section class="tarjeta">
+      <h2>Llegada del pedido</h2>
+      <div class="cambio" style="display: block">
+        <strong>{{ pedido.producto.nombre }}</strong><br>
+        <span class="ayuda" style="margin: 0">Pediste {{ pedido.cantidad|cantidad:pedido.producto.unidad }} a {{ pedido.costo_unitario|pesos }} · {{ pedido.proveedor.nombre }} · {{ pedido.fecha_pedido|date:"d/m/Y" }}</span>
+      </div>
+      {% include "_errores_form.html" %}
+      <div class="campo">
+        <label for="{{ form.cantidad_recibida.id_for_label }}">Cantidad recibida ({{ pedido.producto.unidad|abreviatura }})</label>
+        {{ form.cantidad_recibida }}
+      </div>
+      {% if faltante %}
+        <div class="aviso"><div><strong>Llegó menos de lo pedido</strong>Pediste {{ pedido.cantidad|cantidad:pedido.producto.unidad }} y llegaron {{ llegada|cantidad:pedido.producto.unidad }}. Faltan {{ faltante|cantidad:pedido.producto.unidad }}. El pedido se cerrará con lo que llegó.</div></div>
+      {% endif %}
+      <div class="fila-campos">
+        {% include "_campo.html" with campo=form.costo_unitario %}
+        {% include "_campo.html" with campo=form.fecha_llegada %}
+      </div>
+      <div class="acciones">
+        <span class="etiqueta-estado dueno">Registra: {{ user.nombre }} (tú)</span>
+        <span class="ayuda" style="margin: 0">Cambia el costo si el proveedor cobró distinto.</span>
+      </div>
+      <p style="margin-bottom: 0"><button type="submit" name="revisar" value="1" formnovalidate class="enlace">Actualizar resumen</button></p>
+    </section>
+    <aside class="tarjeta resumen-venta" style="min-height: 0">
+      <h2>Resumen de la llegada</h2>
+      <span class="ayuda" style="margin: 0">Se suma al inventario</span>
+      <div class="total-venta" style="color: var(--exito); font-size: 34px">+ {{ llegada|cantidad:pedido.producto.unidad }}</div>
+      <span class="ayuda" style="margin: 0">Gasto de este pedido</span>
+      <div class="total-venta" style="font-size: 34px">{{ gasto|pesos }}</div>
+      <span class="ayuda" style="margin: 0">{{ llegada|cantidad:pedido.producto.unidad }} × {{ costo_vista|pesos }}</span>
+      <p class="ayuda">Un pedido solo se puede recibir una vez.</p>
+      <div class="pie">
+        <button type="submit" class="boton ancho">Confirmar llegada</button>
+        <a class="boton secundario ancho" href="{% url 'pedidos:pendientes' %}">Cancelar</a>
+      </div>
+    </aside>
+  </div>
+</form>
+{% endblock %}

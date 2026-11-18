@@ -24,4 +24,16 @@
   </div>
   <div style="margin-top: 20px"><button type="submit" class="boton">Guardar configuración</button></div>
 </form>
+
+<section class="tarjeta" style="margin-top: 24px; max-width: 640px">
+  <h2>Apariencia</h2>
+  <p class="ayuda" style="margin-top: -6px">Solo cambia cómo ves la app tú. Cada persona elige la suya con el botón «Modo oscuro» del menú.</p>
+  <form method="post" action="{% url 'usuarios:tema' %}" class="pildoras">
+    {% csrf_token %}
+    <input type="hidden" name="volver" value="{{ request.get_full_path }}">
+    {% for valor, nombre in temas %}
+      <button type="submit" name="tema" value="{{ valor }}" class="chip{% if user.tema == valor %} activo{% endif %}">{{ nombre }}</button>
+    {% endfor %}
+  </form>
+</section>
 {% endblock %}

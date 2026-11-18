@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load formato %}
+{% block titulo %}Pedidos pendientes{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+  <div class="acciones"><h1>Pedidos pendientes</h1><span class="etiqueta-estado amarilla">{{ pedidos|length }} por llegar</span></div>
+  <div class="acciones">
+    <a class="boton secundario" href="{% url 'pedidos:historial' %}">Historial</a>
+    <a class="boton" href="{% url 'pedidos:nuevo' %}">+ Nuevo pedido</a>
+  </div>
+</div>
+<section class="tarjeta">
+  <p class="ayuda" style="margin-top: 0">Ordenados del más antiguo al más reciente</p>
+  <table class="tabla">
+    <thead><tr><th>Producto</th><th class="num">Cantidad</th><th>Proveedor</th><th>Fecha ↑</th><th class="num">Costo unit.</th><th>Por</th><th>Espera</th><th></th></tr></thead>
+    <tbody>
+      {% for p in pedidos %}
+        <tr>
+          <td>{{ p.producto.nombre }}</td>
+          <td class="num">{{ p.cantidad|cantidad:p.producto.unidad }}</td>
+          <td>{{ p.proveedor.nombre }}</td>
+          <td>{{ p.fecha_pedido|date:"d/m" }}</td>
+          <td class="num">{{ p.costo_unitario|pesos }}</td>
+          <td>{{ p.creado_por.nombre }}</td>
+          <td>{{ p.dias_espera }} día{{ p.dias_espera|pluralize }}</td>
+          <td class="num" style="white-space: nowrap">
+            <a class="boton chico" href="{% url 'pedidos:recibir' p.pk %}">Recibir</a>
+            <button type="button" class="enlace peligro" style="margin-left: 10px" hx-get="{% url 'pedidos:cancelar' p.pk %}" hx-target="#modal-contenido">Cancelar</button>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="8" class="vacio">No hay pedidos por llegar.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

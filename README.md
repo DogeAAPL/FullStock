@@ -67,8 +67,10 @@ uv run python manage.py verificar_saldos   # existencias contra movimientos
 | `usuarios` | Usuarios, PIN, bloqueo, clave de recuperación, panel de permisos |
 | `catalogo` | Productos |
 | `inventario` | Movimientos, existencias, correcciones |
-| `fiados` | Clientes y deudas |
+| `fiados` | Clientes, deudas, abonos y lista de cobros |
 | `ventas` | Vender, ventas de hoy, anular y corregir |
+| `pedidos` | Proveedores, pedidos, recepción y cancelación |
+| `reportes` | Cierre del día y estadísticas |
 
 ## Reglas que no se rompen
 
@@ -89,8 +91,13 @@ uv run python manage.py verificar_saldos   # existencias contra movimientos
 
 Las decisiones y sus razones están en `docs/decisiones/`.
 
+## Versión web de demostración
+
+`render.yaml` publica la app en Render con PostgreSQL. Con `FULLSTOCK_DEMO=1`
+la entrada muestra usuarios de prueba y `python manage.py cargar_demo` carga
+datos de ejemplo (solo lo que falte). La base gratuita de Render vence a los
+30 días.
+
 ## Pendiente
 
-Pedidos y proveedores, pantallas de fiados (cobros y abonos), cierre del día,
-estadísticas, carga de productos desde Excel, respaldo automático y el
-instalador para Windows.
+Respaldo automático a USB y el instalador para Windows (versión de la tienda).

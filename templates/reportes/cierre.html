@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load formato %}
+{% block titulo %}Cierre del día{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+  <h1>Cierre del día</h1>
+  <form class="acciones" method="get">
+    <label for="fecha" class="oculto">Día</label>
+    <input id="fecha" type="date" name="fecha" value="{{ resumen.fecha|date:'Y-m-d' }}" max="{{ hoy|date:'Y-m-d' }}" style="width: auto">
+    <button type="submit" class="boton secundario">Ver día</button>
+  </form>
+</div>
+<div class="rejilla-2" style="grid-template-columns: minmax(0, 1fr) 380px">
+  <div class="columna">
+    <section class="tarjeta">
+      <h2>{% if resumen.fecha == hoy %}Hoy, {% endif %}{{ resumen.fecha|date:"l d/m/Y"|capfirst }}</h2>
+      <div class="indicadores">
+        <div><span>Ventas</span><strong>{{ resumen.cantidad_ventas }}</strong></div>
+        <div><span>Total vendido</span><strong>{{ resumen.total_ventas|pesos }}</strong></div>
+        <div><span>De contado</span><strong>{{ resumen.ventas_contado|pesos }}</strong></div>
+        <div><span>Fiado</span><strong>{{ resumen.ventas_fiado|pesos }}</strong></div>
+        <div><span>Abonos recibidos</span><strong>{{ resumen.abonos|pesos }}</strong></div>
+        <div><span>Gasto en pedidos</span><strong>{{ resumen.gastos_pedidos|pesos }}</strong></div>
+        <div><span>Pérdidas y daños</span><strong>{{ resumen.mermas|pesos }}</strong></div>
+        <div><span>Anuladas</span><strong>{{ resumen.anuladas }} · {{ resumen.valor_anuladas|pesos }}</strong></div>
+      </div>
+    </section>
+    <section class="tarjeta">
+      <h2>Ventas por persona</h2>
+      <table class="tabla">
+        <thead><tr><th>Registró</th><th class="num">Ventas</th><th class="num">Total</th></tr></thead>
+        <tbody>
+          {% for u in resumen.por_usuario %}
+            <tr><td>{{ u.usuario__nombre }}</td><td class="num">{{ u.n }}</td><td class="num">{{ u.suma|pesos }}</td></tr>
+          {% empty %}
+            <tr><td colspan="3" class="vacio">No hubo ventas este día.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <aside class="columna">
+    <section class="tarjeta">
+      <span class="ayuda" style="margin: 0">Efectivo que debería haber en caja</span>
+      <div class="total-venta">{{ resumen.efectivo_esperado|pesos }}</div>
+      <span class="ayuda" style="margin: 0">Ventas de contado + abonos. Si pagaste pedidos con el dinero de la caja, réstalos.</span>
+      <hr class="separador">
+      {% if cierre %}
+        <h2>Día cerrado</h2>
+        <dl class="resumen">
+          <dt>Cerró</dt><dd>{{ cierre.cerrado_por.nombre }} · {{ cierre.cerrado_en|hora }}</dd>
+          <dt>Esperado al cerrar</dt><dd>{{ cierre.efectivo_esperado|pesos }}</dd>
+          <dt>Contado</dt><dd>{{ cierre.efectivo_contado|pesos }}</dd>
+          {% if cierre.diferencia is not None %}
+            <dt>Diferencia</dt><dd style="color: {% if cierre.diferencia < 0 %}var(--peligro){% elif cierre.diferencia > 0 %}var(--exito){% else %}inherit{% endif %}">{% if cierre.diferencia > 0 %}+{% endif %}{{ cierre.diferencia|pesos }}</dd>
+          {% endif %}
+        </dl>
+        {% if cierre.nota %}<p class="ayuda">Nota: {{ cierre.nota }}</p>{% endif %}
+        {% if cierre.efectivo_esperado != resumen.efectivo_esperado %}
+          <div class="aviso" style="margin-top: 14px"><div><strong>Cambió después del cierre</strong>Hubo anulaciones o abonos después de cerrar. Hoy el esperado es {{ resumen.efectivo_esperado|pesos }}.</div></div>
+        {% endif %}
+      {% else %}
+        <h2>Cerrar el día</h2>
+        <form method="post" action="{% url 'reportes:cerrar' %}" novalidate>
+          {% csrf_token %}
+          <input type="hidden" name="fecha" value="{{ resumen.fecha|date:'Y-m-d' }}">
+          <div class="campo">
+            <label for="efectivo">Efectivo contado en caja ($)</label>
+            <input id="efectivo" type="text" name="efectivo_contado" inputmode="numeric" autocomplete="off" placeholder="Opcional">
+          </div>
+          <div class="campo">
+            <label for="nota">Nota (opcional)</label>
+            <input id="nota" type="text" name="nota" maxlength="300">
+          </div>
+          <button type="submit" class="boton ancho">Cerrar el día</button>
+          <p class="ayuda">Se guarda una foto de estos números. Un día solo se cierra una vez.</p>
+        </form>
+      {% endif %}
+    </section>
+    <section class="tarjeta">
+      <h2>Cierres anteriores</h2>
+      <table class="tabla">
+        <tbody>
+          {% for c in anteriores %}
+            <tr>
+              <td><a href="?fecha={{ c.fecha|date:'Y-m-d' }}">{{ c.fecha|date:"d/m/Y" }}</a></td>
+              <td class="num">{% if c.diferencia is not None %}{% if c.diferencia == 0 %}<span class="etiqueta-estado verde">Cuadró</span>{% else %}<span class="etiqueta-estado {% if c.diferencia < 0 %}peligro{% else %}amarilla{% endif %}">{% if c.diferencia > 0 %}+{% endif %}{{ c.diferencia|pesos }}</span>{% endif %}{% else %}<span class="ayuda" style="margin:0">Sin conteo</span>{% endif %}</td>
+            </tr>
+          {% empty %}
+            <tr><td class="vacio">Todavía no hay días cerrados.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </aside>
+</div>
+{% endblock %}

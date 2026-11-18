@@ -106,7 +106,15 @@ def test_toda_vista_privada_declara_su_permiso():
     assert sin_permiso == []
 
 
-@pytest.mark.parametrize("nombre", [n for n, p in _vistas() if n not in _PUBLICAS], ids=lambda n: n)
+@pytest.mark.parametrize(
+    "nombre",
+    [
+        n
+        for n, p in _vistas()
+        if n not in _PUBLICAS and p.callback.permiso_requerido != "autenticado"
+    ],
+    ids=lambda n: n,
+)
 def test_vista_rechaza_a_quien_no_tiene_el_permiso(nombre, crear_colaborador, cliente_web):
     patron = dict(_vistas())[nombre]
     requerido = patron.callback.permiso_requerido
@@ -127,7 +135,8 @@ def test_vista_rechaza_a_quien_no_tiene_el_permiso(nombre, crear_colaborador, cl
 )
 def test_vista_permite_a_quien_tiene_el_permiso(nombre, crear_colaborador, cliente_web):
     patron = dict(_vistas())[nombre]
-    colaborador = crear_colaborador(permisos={patron.callback.permiso_requerido})
+    requerido = patron.callback.permiso_requerido
+    colaborador = crear_colaborador(permisos=set() if requerido == "autenticado" else {requerido})
     respuesta = cliente_web(colaborador).get(_url(nombre, patron))
     # 404/405 son válidos (objeto inexistente o vista solo POST): lo que importa es que no sea 403.
     assert respuesta.status_code != 403

@@ -1,5 +1,5 @@
 {% load static %}<!doctype html>
-<html lang="es">
+<html lang="es" data-tema="{{ user.tema|default:'sistema' }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -22,6 +22,14 @@
           <li><a href="{% url entrada.item.url_name %}" class="{% if entrada.activo %}activo{% endif %}"{% if entrada.activo %} aria-current="page"{% endif %}>{% include "_icono.html" with nombre=entrada.item.icono %}{{ entrada.item.nombre }}</a></li>
         {% endfor %}
       </ul>
+      {% if menu_gestion %}
+        <div class="menu-seccion">GESTIÓN</div>
+        <ul class="menu">
+          {% for entrada in menu_gestion %}
+            <li><a href="{% url entrada.item.url_name %}" class="{% if entrada.activo %}activo{% endif %}"{% if entrada.activo %} aria-current="page"{% endif %}>{% include "_icono.html" with nombre=entrada.item.icono %}{{ entrada.item.nombre }}</a></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
       {% if menu_dueno %}
         <div class="menu-seccion">SOLO DUEÑO</div>
         <ul class="menu">
@@ -36,6 +44,15 @@
         <span class="avatar">{{ user.inicial }}</span>
         <div>{{ user.nombre }}<small>{{ user.rol }}</small></div>
       </div>
+      <form method="post" action="{% url 'usuarios:tema' %}">
+        {% csrf_token %}
+        <input type="hidden" name="volver" value="{{ request.get_full_path }}">
+        {% if user.tema == "oscuro" %}
+          <button type="submit" name="tema" value="claro" class="boton-tema">{% include "_icono.html" with nombre="sol" %}Modo claro</button>
+        {% else %}
+          <button type="submit" name="tema" value="oscuro" class="boton-tema">{% include "_icono.html" with nombre="luna" %}Modo oscuro</button>
+        {% endif %}
+      </form>
       <form method="post" action="{% url 'usuarios:logout' %}">
         {% csrf_token %}
         <button type="submit" class="boton-salir">{% include "_icono.html" with nombre="salir" %}Cerrar sesión</button>

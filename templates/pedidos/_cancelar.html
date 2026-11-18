@@ -1,0 +1,14 @@
+{% load formato %}
+<form hx-post="{% url 'pedidos:cancelar' pedido.pk %}" hx-target="#modal-contenido">
+  <h2 style="color: var(--peligro)">¿Cancelar este pedido?</h2>
+  <div class="cambio" style="display: block">
+    <strong>{{ pedido.producto.nombre }} · {{ pedido.cantidad|cantidad:pedido.producto.unidad }}</strong><br>
+    <span class="ayuda" style="margin: 0">{{ pedido.proveedor.nombre }} · pedido el {{ pedido.fecha_pedido|date:"d/m" }}</span>
+  </div>
+  <p>Dejará de salir el aviso de «ya fue pedido» y no suma nada al inventario ni al gasto. El pedido no se borra: queda guardado como cancelado.</p>
+  {% if error %}<div class="errores" role="alert">{{ error }}</div>{% endif %}
+  <div class="acciones-modal">
+    <button type="button" class="boton secundario" data-cerrar-modal>Volver</button>
+    <button type="submit" class="boton peligro">Sí, cancelar pedido</button>
+  </div>
+</form>

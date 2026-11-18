@@ -1,0 +1,10 @@
+<table class="tabla">
+  <thead><tr><th>Nombre</th><th>Teléfono</th><th class="num">Pedidos pendientes</th></tr></thead>
+  <tbody>
+    {% for p in proveedores %}
+      <tr><td>{{ p.nombre }}</td><td>{{ p.telefono|default:"—" }}</td><td class="num">{{ p.pendientes }}</td></tr>
+    {% empty %}
+      <tr><td colspan="3" class="vacio">{% if q %}No hay proveedores con «{{ q }}».{% else %}Todavía no hay proveedores.{% endif %}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>

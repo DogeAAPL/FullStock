@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load formato %}
+{% block titulo %}Historial de pedidos{% endblock %}
+{% block contenido %}
+<div class="encabezado">
+  <h1>Historial de pedidos</h1>
+  <a class="boton secundario" href="{% url 'pedidos:pendientes' %}">← Pendientes</a>
+</div>
+<section class="tarjeta">
+  <p class="ayuda" style="margin-top: 0">Los 50 pedidos recibidos o cancelados más recientes.</p>
+  <table class="tabla">
+    <thead><tr><th>Producto</th><th>Proveedor</th><th>Pedido</th><th>Estado</th><th class="num">Pedido</th><th class="num">Llegó</th><th class="num">Gasto</th><th>Quién</th></tr></thead>
+    <tbody>
+      {% for p in pedidos %}
+        <tr>
+          <td>{{ p.producto.nombre }}</td>
+          <td>{{ p.proveedor.nombre }}</td>
+          <td>{{ p.fecha_pedido|date:"d/m" }}</td>
+          <td>{% if p.estado == "recibido" %}<span class="etiqueta-estado verde">Recibido {{ p.fecha_llegada|date:"d/m" }}</span>{% else %}<span class="etiqueta-estado peligro">Cancelado</span>{% endif %}</td>
+          <td class="num">{{ p.cantidad|cantidad:p.producto.unidad }}</td>
+          <td class="num">{% if p.cantidad_recibida is not None %}{{ p.cantidad_recibida|cantidad:p.producto.unidad }}{% if p.faltante %} <span class="etiqueta-estado amarilla">faltó {{ p.faltante|cantidad:p.producto.unidad }}</span>{% endif %}{% else %}—{% endif %}</td>
+          <td class="num">{{ p.gasto|pesos }}</td>
+          <td>{% if p.recibido_por %}{{ p.recibido_por.nombre }}{% else %}{{ p.cancelado_por.nombre }}{% endif %}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="8" class="vacio">Todavía no hay pedidos recibidos ni cancelados.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

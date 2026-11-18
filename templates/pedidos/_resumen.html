@@ -1,0 +1,12 @@
+{% load formato %}
+<h2>Resumen del pedido</h2>
+<dl class="resumen">
+  <dt>Producto</dt><dd>{{ producto.nombre|default:"—" }}</dd>
+  <dt>Cantidad</dt><dd>{% if producto and form.data.cantidad %}{{ form.data.cantidad }} {{ producto.unidad|abreviatura }}{% else %}—{% endif %}</dd>
+  <dt>Costo unitario</dt><dd>{% if form.data.costo_unitario %}$ {{ form.data.costo_unitario }}{% else %}—{% endif %}</dd>
+  <dt>Proveedor</dt><dd>{{ proveedor.nombre|default:"—" }}</dd>
+</dl>
+<hr class="separador">
+<span class="ayuda" style="margin: 0">Total estimado</span>
+<div class="total-venta" style="font-size: 38px">{{ total|pesos }}</div>
+<p class="ayuda">El aviso amarillo no bloquea: puedes guardar aunque ya esté pedido.</p>

@@ -1,0 +1,8 @@
+{% load formato %}
+{% for p in productos %}
+  <li><button type="button" hx-get="{% url 'pedidos:elegir_producto' p.pk %}" hx-target="#producto-pedido">
+    <span>{{ p.nombre }}</span><small>hay {{ p.existencia|cantidad:p.unidad }}</small>
+  </button></li>
+{% empty %}
+  {% if request.GET.q %}<li class="vacio">Sin resultados.</li>{% endif %}
+{% endfor %}

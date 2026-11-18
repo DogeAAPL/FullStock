@@ -127,7 +127,8 @@ def vaciar(request):
 @require_GET
 def buscar_clientes(request):
     clientes = fiados.buscar_clientes(request.GET.get("q", ""), limite=6)
-    return render(request, "ventas/_clientes.html", {"clientes": clientes})
+    limite = request.configuracion.limite_deuda
+    return render(request, "ventas/_clientes.html", {"clientes": clientes, "limite": limite})
 
 
 @requiere_permiso("vender")
