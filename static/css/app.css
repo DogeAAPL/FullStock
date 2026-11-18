@@ -267,6 +267,10 @@ dialog h2 { font-size: 22px; }
   background: var(--azul-suave); color: var(--titulo); border-radius: 10px; padding: 18px; text-align: center; margin: 18px 0;
 }
 
+/* --- Bloque de demostración en la entrada ----------------------------- */
+.demo { margin-top: 28px; border: 1.5px dashed var(--borde); border-radius: var(--radio); padding: 14px 18px; }
+.demo .tabla td { padding: 7px 12px; }
+
 /* --- Página de permisos ------------------------------------------------ */
 .marcas { display: flex; flex-wrap: wrap; gap: 6px; }
 .paginacion { display: flex; gap: 12px; justify-content: flex-end; align-items: center; margin-top: 14px; color: var(--texto-suave); }

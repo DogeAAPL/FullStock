@@ -33,7 +33,7 @@ _MENU_DUENO = (
 def navegacion(request) -> dict:
     usuario = getattr(request, "user", None)
     if usuario is None or not usuario.is_authenticated:
-        return {"tienda_nombre": settings.TIENDA_NOMBRE}
+        return {"tienda_nombre": settings.TIENDA_NOMBRE, "modo_demo": settings.DEMO}
     match = getattr(request, "resolver_match", None)
     vista = match.view_name if match else ""
 
@@ -45,4 +45,5 @@ def navegacion(request) -> dict:
         "menu_dueno": items(_MENU_DUENO) if usuario.es_dueno else [],
         "minutos_inactividad": request.configuracion.minutos_inactividad,
         "tienda_nombre": settings.TIENDA_NOMBRE,
+        "modo_demo": settings.DEMO,
     }

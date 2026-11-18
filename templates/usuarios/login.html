@@ -11,4 +11,26 @@
   <button type="submit" class="boton ancho">Entrar</button>
   <p style="margin-top: 14px"><a href="{% url 'usuarios:recuperar' %}">¿Olvidó su PIN? Use la clave de recuperación</a></p>
 </form>
+{% if modo_demo %}
+  <div class="demo">
+    <strong>Versión de demostración</strong>
+    <p class="ayuda">Elige un usuario para llenar los datos.</p>
+    <table class="tabla">
+      <thead><tr><th>Usuario</th><th>PIN</th><th>Rol</th><th></th></tr></thead>
+      <tbody>
+        <tr><td>jeancarlo</td><td>1234</td><td>Dueño</td><td><button type="button" class="enlace" data-usuario="jeancarlo" data-pin="1234">Usar</button></td></tr>
+        <tr><td>esposa</td><td>5678</td><td>Colaboradora</td><td><button type="button" class="enlace" data-usuario="esposa" data-pin="5678">Usar</button></td></tr>
+        <tr><td>hermano</td><td>9012</td><td>Solo vende</td><td><button type="button" class="enlace" data-usuario="hermano" data-pin="9012">Usar</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <script>
+    document.querySelectorAll("[data-usuario]").forEach(function (boton) {
+      boton.addEventListener("click", function () {
+        document.getElementById("id_usuario").value = boton.dataset.usuario;
+        document.getElementById("id_pin").value = boton.dataset.pin;
+      });
+    });
+  </script>
+{% endif %}
 {% endblock %}

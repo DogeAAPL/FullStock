@@ -8,6 +8,9 @@ dependencies = [
     "waitress>=3.0",
     "whitenoise>=6.7",
     "openpyxl>=3.1",
+    "dj-database-url>=3.0",
+    "psycopg[binary]>=3.2",
+    "gunicorn>=23.0",
 ]
 
 [dependency-groups]
@@ -27,6 +30,8 @@ DJANGO_SETTINGS_MODULE = "config.settings"
 python_files = ["test_*.py"]
 addopts = "-q --strict-markers"
 testpaths = ["apps", "tests"]
+# En pruebas no se corre collectstatic.
+filterwarnings = ["ignore:No directory at:UserWarning"]
 
 [tool.ruff]
 line-length = 100

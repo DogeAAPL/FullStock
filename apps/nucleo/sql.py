@@ -13,7 +13,11 @@ from django.db import migrations
 _FUNCION_PG = """
 CREATE OR REPLACE FUNCTION fullstock_solo_insercion() RETURNS trigger AS $$
 BEGIN
-    RAISE EXCEPTION 'La tabla % es de solo inserción', TG_TABLE_NAME;
+    -- Sin el carácter de porcentaje: el driver lo tomaría como parámetro.
+    -- restrict_violation: Django lo recibe como IntegrityError, igual que en SQLite.
+    RAISE EXCEPTION USING
+        ERRCODE = 'restrict_violation',
+        MESSAGE = 'La tabla ' || TG_TABLE_NAME || ' es de solo inserción';
 END;
 $$ LANGUAGE plpgsql;
 """

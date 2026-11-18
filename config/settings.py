@@ -1,14 +1,16 @@
 """Configuración de FullStock.
 
-Todo lo que cambia entre la tienda y un servidor futuro se lee de variables de
-entorno con prefijo FULLSTOCK_. Los datos (base de datos, clave secreta,
-registros y respaldos) viven en RUTA_DATOS, separados del código, para que
-reinstalar o actualizar nunca los toque.
+Todo lo que cambia entre la tienda y un servidor se lee de variables de
+entorno con prefijo FULLSTOCK_ (y DATABASE_URL). Hay dos formas de correr:
+
+- En el computador de la tienda: SQLite en RUTA_DATOS, solo en 127.0.0.1.
+- Como página web pública (Render): PostgreSQL por DATABASE_URL y HTTPS.
 """
 
 import os
 from pathlib import Path
 
+import dj_database_url
 from django.core.management.utils import get_random_secret_key
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,6 +28,9 @@ DEBUG = _env("DEBUG", "0") == "1"
 # Nombre que se muestra en el menú lateral.
 TIENDA_NOMBRE = _env("TIENDA_NOMBRE", "El Papayal")
 
+# Modo demostración: la pantalla de entrada muestra usuarios y PIN de prueba.
+DEMO = _env("DEMO", "0") == "1"
+
 
 def _clave_secreta() -> str:
     """Una clave por instalación, generada la primera vez y nunca versionada."""
@@ -39,8 +44,21 @@ def _clave_secreta() -> str:
 
 SECRET_KEY = _clave_secreta()
 
-# El servidor solo escucha en el propio computador (ver docs/decisiones).
+# En la tienda solo se escucha en el propio computador (ver docs/decisiones).
 ALLOWED_HOSTS = [h for h in _env("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",") if h]
+CSRF_TRUSTED_ORIGINS = [o for o in _env("CSRF_TRUSTED_ORIGINS").split(",") if o]
+
+# Render publica el dominio del servicio en esta variable.
+if dominio := os.environ.get("RENDER_EXTERNAL_HOSTNAME"):
+    ALLOWED_HOSTS.append(dominio)
+    CSRF_TRUSTED_ORIGINS.append(f"https://{dominio}")
+
+# Detrás de un proxy con HTTPS (Render): cookies solo por HTTPS. La redirección
+# de http a https la hace Render antes de llegar a la app.
+if _env("HTTPS", "0") == "1" or os.environ.get("RENDER"):
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 INSTALLED_APPS = [
     "django.contrib.auth",
@@ -93,7 +111,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # SQLite configurado para uso real (ver documento de rendimiento):
 # WAL para leer mientras se escribe, IMMEDIATE para evitar "database is locked"
 # a mitad de una venta y synchronous=FULL para no perder la última venta si se
-# va la luz.
+# va la luz. Con DATABASE_URL se usa esa base (PostgreSQL en el servidor).
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -110,6 +128,9 @@ DATABASES = {
         },
     }
 }
+
+if url_base := os.environ.get("DATABASE_URL"):
+    DATABASES["default"] = dj_database_url.parse(url_base, conn_max_age=60, conn_health_checks=True)
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
