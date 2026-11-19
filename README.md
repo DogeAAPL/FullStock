@@ -7,7 +7,7 @@
 **Inventario, ventas, pedidos y fiados para tiendas de barrio.**<br>
 Sin cuadernos, sin hardware extra y pensado para quien nunca ha usado un programa de gestión.
 
-[![Pruebas](https://github.com/DogeAAPL/ElPapayal/actions/workflows/ci.yml/badge.svg)](https://github.com/DogeAAPL/ElPapayal/actions/workflows/ci.yml)
+[![Pruebas](https://github.com/DogeAAPL/FullStock/actions/workflows/ci.yml/badge.svg)](https://github.com/DogeAAPL/FullStock/actions/workflows/ci.yml)
 ![Python 3.13](https://img.shields.io/badge/Python-3.13-1F5BD8?logo=python&logoColor=white)
 ![Django 6.1](https://img.shields.io/badge/Django-6.1-0B2A66?logo=django&logoColor=white)
 ![HTMX 2](https://img.shields.io/badge/HTMX-2-5B8DEF)
@@ -119,7 +119,7 @@ Las decisiones y sus razones están en [`docs/decisiones/`](docs/decisiones).
 Requisitos: Python 3.13 y [uv](https://docs.astral.sh/uv/), que instala las versiones exactas de [`uv.lock`](uv.lock).
 
 ```bash
-git clone https://github.com/DogeAAPL/ElPapayal.git fullstock
+git clone https://github.com/DogeAAPL/FullStock.git fullstock
 cd fullstock
 uv sync                       # entorno y dependencias exactas
 uv run pre-commit install     # revisa el estilo antes de cada commit
